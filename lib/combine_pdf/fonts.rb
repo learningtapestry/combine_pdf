@@ -256,7 +256,7 @@ module CombinePDF
             b.each_index { |i| metrics[cmap_inverted[(a + i)] || (a + i)] = { wx: b[i], boundingbox: avarage_bbox } }
           else
             c = old_widths.shift
-            (b - a).times { |i| metrics[cmap_inverted[(a + i)] || (a + i)] = { wx: c[0], boundingbox: avarage_bbox } }
+            (b - a + 1).times { |i| metrics[cmap_inverted[(a + i)] || (a + i)] = { wx: c.is_a?(Array) ? c[0] : c, boundingbox: avarage_bbox } }
           end
 
         end
