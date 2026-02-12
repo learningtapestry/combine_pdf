@@ -1,6 +1,78 @@
 # Change Log
 
-***
+#### Change log v.1.0.31 (2025-04-08)
+
+**Fix**: RangeError: index out of range errors occurred with some malformed PDFs, when the number of bytes in a PDF `stream` didn't match the number of bytes expected according to the `Length` property. Credit to @Laykou and others for opening multiple issues (i.e., #205), as well as @julitrows, @mtwzim, and @Kaiito630, for pushing on this.
+
+**Fix**: frozen string literal lingering issues. Credit to @pauline-koch, @qdegraeve, @isaporto, @ncreuschling, @francescob, @@anthonykaufman and @ma-matsui for their input on this issue. Credit to @anthonykaufman for offering one possible solution and @Markus-Munk-Shipmondo for pushing on this. Credit to @mfazekas for opening PR #215 and for @RBIII, @juliolinarez, and @osvaldoalvaradodev for supporting it.
+
+**Fix**: possible permission issues. Credit to @davidwessman, @visini, @sander-deryckere, and @LindseySaari for exploring this.
+
+**Fix**: calling CombinePDF.parse with a frozen string literal. Credit to @lovro-bikic for offering one possible solution.
+
+**Fix**: Ruby 3.4 warning. Credit to @chaadow for offering one possible solution.
+
+#### Change log v.1.0.29 (2024-12-07)
+
+**Fix**: frozen string literal support fix. Credit to @francescob (Francesco) for PR #245.
+
+#### Change log v.1.0.28 (2024-11-12)
+
+**Fix**: use `require` to load code (instead of `load`). Credit to @casperisfine (Jean byroot Boussier) for PR #216.
+
+#### Change log v.1.0.27 (2024-11-10)
+
+**Performance**: fix performance issues with `object_id` usage in Ruby 3+. Credit to @amomchilov (Alexander Momchilov) for PR #241.
+
+**Performance**: use frozen string literals. Credit to @casperisfine (Jean byroot Boussier) for PR #239.
+
+#### Change log v.1.0.26 (2023-12-22)
+
+**Performance**: possible performance bump. Credit to @denislavski (Denislav Naydenov) for opening PR #235.
+
+#### Change log v.1.0.25 (2023-12-19)
+
+**Fix**: possible improve memory usage. Credit to @denislavski (Denislav Naydenov) for opening PR #233 and suggesting this change.
+
+#### Change log v.1.0.24 (2023-10-19)
+
+**Fix**: possible `nil` in loop. Credit to @jkowens for PR #231 and adding a quick fix using a simple guard.
+
+**Fix**: preserve file creation date metadata where relevant.
+
+#### Change log v.1.0.23 (2023-04-04)
+
+**Feature**: merged PR #177 for the `raise_on_encrypted: true` option support. Credit to @leviwilson and @kimyu92 for the PR.
+
+#### Change log v.1.0.22
+
+**Fix**: fix `fonts` dereferencing issue (#203), credit to @MarcWeber (Marc Weber) for identifying the issue.
+
+**Fix**: fix `metrix` dependency, credit to @casperisfine (Jean byroot Boussier) for PR #195.
+
+#### Change log v.1.0.21
+
+**Fix**: possible fix for issue #184, where nested PDF files within an object stream could break the parser. Credit to Greg Sparrow (@hazelsparrow) for exposng the issue.
+
+#### Change log v.1.0.20
+
+**Fix**: merges PR #180, `TypeError: can't dup NilClass`. Credit to Adam Trepanier (@adam-e-trepanier) for the merge.
+
+#### Change log v.1.0.19
+
+**Fix**: fixes font height and width detection issue. Issue #179. Credit to @5anchezzz for opening the issue.
+
+**Fix**: fixes an indentation warning. Issue #173. Credit to @rubyFeedback for exposing this issue.
+
+#### Change log v.1.0.18
+
+**Fix**: fixed issue with the 1.0.17 release where `ProcSet` PDF Arrays should have been expected but where ignored and a PDF Object was assumed instead (issue #171) - credit to @chuchiperriman (Jesús Barbero Rodríguez).
+
+#### Change log v.1.0.17
+
+NB: yanked from RubyGems.org.
+
+**Fix**: fixed issue where nested structure equality tests might provide false positives, resulting in lost data (issue #166) - credit to @cschilbe (Conrad Schilbe).
 
 #### Change log v.1.0.16
 

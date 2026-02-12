@@ -1,9 +1,21 @@
 # CombinePDF - the ruby way for merging PDF files
 [![Gem Version](https://badge.fury.io/rb/combine_pdf.svg)](http://badge.fury.io/rb/combine_pdf)
 [![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-blue.svg)](https://github.com/boazsegev/combine_pdf)
+[![Documentation](http://inch-ci.org/github/boazsegev/combine_pdf.svg?branch=master)](https://www.rubydoc.info/github/boazsegev/combine_pdf)
 [![Maintainers Wanted](https://img.shields.io/badge/maintainers-wanted-red.svg)](https://github.com/pickhardt/maintainers-wanted)
 
+
 CombinePDF is a nifty model, written in pure Ruby, to parse PDF files and combine (merge) them with other PDF files, watermark them or stamp them (all using the PDF file format and pure Ruby code).
+
+## Unmaintained - Help Wanted(!)
+
+I decided to stop maintaining this gem and hope someone could take over the PR reviews and maintenance of this gem (or simply open a successful fork).
+
+I wrote this gem because I needed to solve an issue with bates-numbering existing PDF documents.
+
+However, since 2014 I have been maintaining the gem for free and for no reason at all, except that I enjoyed sharing it with the community.
+
+I love this gem, but I cannot keep maintaining it as I have my own projects to focus own and I need both the time and (more importantly) the mindspace.
 
 ## Install
 
@@ -12,16 +24,6 @@ Install with ruby gems:
 ```ruby
 gem install combine_pdf
 ```
-
-## Help Wanted
-
-I need help maintaining the CombinePDF Ruby gem.
-
-I wrote this gem because I needed to solve an issue with bates-numbering existing PDF documents. However, during the last three years or so I have been maintaining the project for no reason at all, except that I enjoyed sharing it with the community.
-
-I love this gem, but I feel it's time I took a step back from maintaining it and concentrate on my music and other things I want to develop.
-
-Please hit me up if you would like to join in and eventually take over.
 
 ## Known Limitations
 
@@ -37,9 +39,11 @@ Quick rundown:
 
     Some links will be lost when ripping pages out of PDF files and merging them with another PDF.
 
-* Some encrypted PDF files (usually the ones you can't view without a password) will fail quietly instead of noisily.
+* Some encrypted PDF files (usually the ones you can't view without a password) will fail quietly instead of noisily. If you prefer to choose the noisy route, you can specify the `raise_on_encrypted` option using `CombinePDF.load(pdf_file, raise_on_encrypted: true)` which will raise a `CombinePDF::EncryptionError`.
 
 * Sometimes the CombinePDF will raise an exception even if the PDF could be parsed (i.e., when PDF optional content exists)... I find it better to err on the side of caution, although for optional content PDFs an exception is avoidable using `CombinePDF.load(pdf_file, allow_optional_content: true)`.
+
+* The CombinePDF gem runs recursive code to both parse and format the PDF files. Hence, PDF files that have heavily nested objects, as well as those that where combined in a way that results in cyclic nesting, might explode the stack - resulting in an exception or program failure.
 
 CombinePDF is written natively in Ruby and should (presumably) work on all Ruby platforms that follow Ruby 2.0 compatibility.
 
@@ -112,7 +116,42 @@ pdf.number_pages
 pdf.save "file_with_numbering.pdf"
 ```
 
-Numbering can be done with many different options, with different formating, with or without a box object, and even with opacity values - see documentation.
+Numbering can be done with many different options, with different formating, with or without a box object, and even with opacity values - [see documentation](https://www.rubydoc.info/github/boazsegev/combine_pdf/CombinePDF/PDF#number_pages-instance_method).
+
+For example, should you prefer to place the page number on the bottom right side of all PDF pages, do:
+
+```ruby
+pdf.number_pages(location: [:bottom_right])
+```
+
+As another example, the dashes around the number are removed and a box is placed around it. The numbering is semi-transparent and the first 3 pages are numbered using letters (a,b,c) rather than numbers:
+
+
+```ruby
+# number first 3 pages as "a", "b", "c"
+pdf.number_pages(number_format: " %s ",
+                 location: [:top, :bottom, :top_left, :top_right, :bottom_left, :bottom_right],
+                 start_at: "a",
+                 page_range: (0..2),
+                 box_color: [0.8,0.8,0.8],
+                 border_color: [0.4, 0.4, 0.4],
+                 border_width: 1,
+                 box_radius: 6,
+                 opacity: 0.75)
+# number the rest of the pages as 4, 5, ... etc'
+pdf.number_pages(number_format: " %s ",
+                 location: [:top, :bottom, :top_left, :top_right, :bottom_left, :bottom_right],
+                 start_at: 4,
+                 page_range: (3..-1),
+                 box_color: [0.8,0.8,0.8],
+                 border_color: [0.4, 0.4, 0.4],
+                 border_width: 1,
+                 box_radius: 6,
+                 opacity: 0.75)
+```
+
+    pdf.number_pages(number_format: " %s ", location: :bottom_right, font_size: 44)
+
 
 ## Loading and Parsing PDF data
 
