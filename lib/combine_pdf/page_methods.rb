@@ -784,6 +784,7 @@ module CombinePDF
 
       out = []
       text.chars.each do |c|
+        char_encoded = false
         fonts_array.each_index do |i|
           next unless fonts_array[i].cmap.nil? || (fonts_array[i].cmap && fonts_array[i].cmap[c])
           # add to array
@@ -796,7 +797,17 @@ module CombinePDF
             out.last[2] += fonts_array[i].metrics[c][:wx].to_f
             out.last[3] += fonts_array[i].metrics[c][:wy].to_f
           end
+          char_encoded = true
           break
+        end
+        # Fallback: if no font could encode this character, use the first font with hex encoding
+        unless char_encoded
+          warn "CombinePDF: Character '#{c.inspect}' not found in any font cmap, using fallback encoding"
+          if out.last.nil? || out.last[0] != fonts[0]
+            out.last[1] << '>' unless out.last.nil?
+            out << [fonts[0], (+'<'), 0, 0]
+          end
+          out.last[1] << c.unpack('H*')[0]
         end
       end
       out.last[1] << '>' if out.last

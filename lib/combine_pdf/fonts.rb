@@ -31,8 +31,9 @@ module CombinePDF
       attr_reader :metrics
       # set the metrics dictionary of the font, making sure the :missing value is set.
       def metrics=(new_metrics)
-        @metrics = new_metrics
-        @metrics[:missing] = @metrics.first[1] unless @metrics[:missing]
+        @metrics = new_metrics || {}
+        @metrics[:missing] = @metrics.first&.last unless @metrics[:missing]
+        @metrics[:missing] ||= { wx: 250, boundingbox: [0, 0, 0, 0] }  # Ensure fallback
       end
 
       # internelized a new Font object, setting it's name, it's metrics Hash and the object Hash.
@@ -53,8 +54,9 @@ module CombinePDF
           if cmap[c]
             cmap[c]
           else
-            warn "CombinePDF ERROR: couldn't encode string - characters not supported by the chosen font."
-            ''
+            warn "CombinePDF ERROR: couldn't encode string - characters not supported by the chosen font (char: #{c.inspect})"
+            # Fallback to hex encoding of the character instead of dropping it
+            c.unpack('H*')[0]
           end
         end
         coded_array.unshift '<'
@@ -441,7 +443,10 @@ module CombinePDF
       lines_found.each do |line|
         case line.length
         when 2
-          cmap['%c' % line[1].hex] = line[0] # FixMe? for now limit to 8 Byte data
+          # Support multi-byte Unicode characters, not just single-byte
+          unicode_value = line[1].hex
+          char = unicode_value < 0x10000 ? [unicode_value].pack('U') : [unicode_value].pack('U*')
+          cmap[char] = line[0] # FixMe? for now limit to 8 Byte data
         when 3
           if line[2].is_a?(Array)
             format = "%0#{line[0].length}x"
@@ -449,7 +454,9 @@ module CombinePDF
             last_char = line[1].hex
             j = 0
             while i <= last_char
-              cmap['%c' % line[2][j].hex] = format % i # FixMe? for now limit to 8 Byte data
+              unicode_value = line[2][j].hex
+              char = unicode_value < 0x10000 ? [unicode_value].pack('U') : [unicode_value].pack('U*')
+              cmap[char] = format % i # FixMe? for now limit to 8 Byte data
               j += 1
               i += 1
             end
@@ -459,7 +466,9 @@ module CombinePDF
             last_char = line[1].hex
             j = 0
             while i <= last_char
-              cmap['%c' % (line[2].hex + j)] = format % i # FixMe? for now limit to 8 Byte data
+              unicode_value = line[2].hex + j
+              char = unicode_value < 0x10000 ? [unicode_value].pack('U') : [unicode_value].pack('U*')
+              cmap[char] = format % i # FixMe? for now limit to 8 Byte data
               j += 1
               i += 1
             end
